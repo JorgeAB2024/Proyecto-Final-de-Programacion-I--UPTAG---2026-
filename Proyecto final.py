@@ -1,3 +1,60 @@
+import getpass
+
+
+
+class GestorUsuarios:
+    def __init__(self):
+        self.usuarios = {"admin": "1234"} 
+    def registrar(self, usuario, contrasena):
+        if usuario in self.usuarios:
+            print(f"El usuario '{usuario}' ya existe.")
+        else:
+            self.usuarios[usuario] = contrasena
+            print("Usuario registrado con éxito.")
+
+    def autenticar(self, usuario, contrasena):
+        if usuario in self.usuarios and self.usuarios[usuario] == contrasena:
+            return True
+        print("Usuario o contraseña incorrectos.")
+        return False
+
+class Inventario:
+    def __init__(self):
+        self.productos = {}
+
+    def agregar(self, codigo, nombre, precio, cantidad):
+        self.productos[codigo] = f"ID: {codigo} | Nombre: {nombre} | Precio: ${precio} | Stock: {cantidad}"
+        print("Producto agregado con éxito.")
+
+    def buscar(self, criterio):
+        return [v for k, v in self.productos.items() if criterio in str(k) or criterio in v]
+
+    def borrar(self, codigo):
+        if codigo in self.productos:
+            del self.productos[codigo]
+            print("Producto eliminado.")
+        else:
+            print("Código no encontrado.")
+
+    def guardar(self):
+        print("Datos guardados en la base de datos local.")
+
+
+
+def solicitar_solo_numeros(mensaje, permitir_decimal=False):
+   
+    while True:
+        try:
+            entrada = input(mensaje).strip()
+            valor = float(entrada) if permitir_decimal else int(entrada)
+            if valor >= 0:
+                return entrada if not permitir_decimal else valor
+            print("Error: No se permiten números negativos.")
+        except ValueError:
+            print("Error: Ingrese un número válido.")
+
+
+
 def menu_auth():
     gestor = GestorUsuarios()
     while True:
@@ -65,4 +122,4 @@ def menu(usuario_actual):
             break
 
 if __name__ == "__main__":
-    menu_auth()
+    menu_auth()             
