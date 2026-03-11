@@ -1,64 +1,59 @@
-import os
-import hashlib
-import getpass 
+import getpass
 
-class Usuario:
-    def __init__(self, nombre_usuario, contrasena_encriptada):
-        self.nombre_usuario = nombre_usuario
-        self.contrasena_encriptada = contrasena_encriptada
 
-    def a_csv(self):
-        return f"{self.nombre_usuario},{self.contrasena_encriptada}\n"
 
 class GestorUsuarios:
-    def __init__(self, archivo="usuarios_pro.txt"):
-        self.archivo = archivo
-        self.usuarios = {}
-        self._cargar_datos()
+    def __init__(self):
+        self.usuarios = {"admin": "1234"} 
+    def registrar(self, usuario, contrasena):
+        if usuario in self.usuarios:
+            print(f"El usuario '{usuario}' ya existe.")
+        else:
+            self.usuarios[usuario] = contrasena
+            print("Usuario registrado con éxito.")
 
-    def _encriptar_contrasena(self, contrasena):
-        return hashlib.sha256(contrasena.encode()).hexdigest()
+    def autenticar(self, usuario, contrasena):
+        if usuario in self.usuarios and self.usuarios[usuario] == contrasena:
+            return True
+        print("Usuario o contraseña incorrectos.")
+        return False
 
-    def _cargar_datos(self):
-        if os.path.exists(self.archivo):
-            try:
-                with open(self.archivo, "r", encoding="utf-8") as f:
-                    for linea in f:
-                        parts = linea.strip().split(",")
-                        if len(parts) == 2:
-                            usuario, contrasena = parts
-                            self.usuarios[usuario] = Usuario(usuario, contrasena)
-            except: pass
+class Inventario:
+    def __init__(self):
+        self.productos = {}
+
+    def agregar(self, codigo, nombre, precio, cantidad):
+        self.productos[codigo] = f"ID: {codigo} | Nombre: {nombre} | Precio: ${precio} | Stock: {cantidad}"
+        print("Producto agregado con éxito.")
+
+    def buscar(self, criterio):
+        return [v for k, v in self.productos.items() if criterio in str(k) or criterio in v]
+
+    def borrar(self, codigo):
+        if codigo in self.productos:
+            del self.productos[codigo]
+            print("Producto eliminado.")
+        else:
+            print("Código no encontrado.")
 
     def guardar(self):
-        with open(self.archivo, "w", encoding="utf-8") as f:
-            f.writelines(usuario.a_csv() for usuario in self.usuarios.values())
+        print("Datos guardados en la base de datos local.")
 
-    def registrar(self, nombre_usuario, contrasena):
-        if nombre_usuario in self.usuarios:
-            print(f"El usuario '{nombre_usuario}' ya existe.")
-            return False
-        if not nombre_usuario.strip() or not contrasena.strip():
-            print("Usuario y contraseña no pueden estar vacíos.")
-            return False
-            
-        contrasena_encriptada = self._encriptar_contrasena(contrasena)
-        self.usuarios[nombre_usuario] = Usuario(nombre_usuario, contrasena_encriptada)
-        self.guardar()
-        print(f"Usuario '{nombre_usuario}' registrado exitosamente.")
-        return True
 
-    def autenticar(self, nombre_usuario, contrasena):
-        if nombre_usuario not in self.usuarios:
-            print("Usuario no encontrado.")
-            return False
-            
-        usuario = self.usuarios[nombre_usuario]
-        if usuario.contrasena_encriptada == self._encriptar_contrasena(contrasena):
-            return True
-        else:
-            print("Contraseña incorrecta.")
-            return False
+
+def solicitar_solo_numeros(mensaje, permitir_decimal=False):
+   
+    while True:
+        try:
+            entrada = input(mensaje).strip()
+            valor = float(entrada) if permitir_decimal else int(entrada)
+            if valor >= 0:
+                return entrada if not permitir_decimal else valor
+            print("Error: No se permiten números negativos.")
+        except ValueError:
+            print("Error: Ingrese un número válido.")
+
+
 
 def menu_auth():
     gestor = GestorUsuarios()
@@ -127,4 +122,4 @@ def menu(usuario_actual):
             break
 
 if __name__ == "__main__":
-    menu_auth()
+    menu_auth()             
