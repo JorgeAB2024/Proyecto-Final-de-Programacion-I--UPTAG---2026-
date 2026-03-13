@@ -44,7 +44,50 @@ def solicitar_solo_numeros(mensaje, permitir_decimal=False):
                 return entrada if not permitir_decimal else valor
             print("Error: No se permiten números negativos.")
         except ValueError:
-            print("Error: Ingrese un número válido.")     
+            print("Error: Ingrese un número válido.")  
+
+class Inventario:
+    def __init__(self, nombre_archivo="inventario_pro.txt"):
+        self.archivo = nombre_archivo
+        self.productos = {}
+        self._cargar_datos()
+
+    def _cargar_datos(self):
+        if os.path.exists(self.archivo):
+            try:
+                with open(self.archivo, "r", encoding="utf-8") as f:
+                    for linea in f:
+                        parts = linea.strip().split(",")
+                        if len(parts) == 4:
+                            codigo, nombre, precio, cantidad = parts
+                            self.productos[codigo] = Producto(codigo, nombre, float(precio), int(cantidad))
+            except: pass
+
+    def agregar(self, codigo, nombre, precio, cantidad):
+        if codigo in self.productos:
+            print(f"El código {codigo} ya existe para: {self.productos[codigo].nombre}")
+            return
+        self.productos[codigo] = Producto(codigo, nombre, precio, cantidad)
+        print(f"Registrado: {nombre}")
+
+    def borrar(self, codigo):
+        if self.productos.pop(codigo, None):
+            print(f"🗑️ Producto {codigo} eliminado.")
+        else:
+            print("Código no encontrado.")
+
+    def buscar(self, criterio):
+        encontrados = []
+        criterio = criterio.lower().strip()
+        for producto in self.productos.values():
+            if criterio == producto.codigo or criterio in producto.nombre.lower():
+                encontrados.append(producto)
+        return encontrados
+
+    def guardar(self):
+        with open(self.archivo, "w", encoding="utf-8") as f:
+            f.writelines(producto.a_csv() for producto in self.productos.values())
+
             
 class Usuario:
     def __init__(self, nombre_usuario, contrasena_encriptada):
