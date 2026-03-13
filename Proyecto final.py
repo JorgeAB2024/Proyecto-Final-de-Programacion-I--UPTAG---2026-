@@ -2,6 +2,50 @@ import os
 import hashlib
 import getpass 
 
+class Item:
+    def __init__(self, codigo, nombre):
+        self.codigo = codigo 
+        self.nombre = nombre.strip().title()
+
+class Producto(Item):
+    def __init__(self, codigo, nombre, precio, cantidad):
+        super().__init__(codigo, nombre)
+        self.precio = precio
+        self.cantidad = cantidad
+
+    @property
+    def precio(self): return self._precio
+
+    @precio.setter
+    def precio(self, valor):
+        if float(valor) < 0: raise ValueError("Precio negativo no permitido.")
+        self._precio = float(valor)
+
+    @property
+    def cantidad(self): return self._cantidad
+
+    @cantidad.setter
+    def cantidad(self, valor):
+        if int(valor) < 0: raise ValueError("Stock negativo no permitido.")
+        self._cantidad = int(valor)
+
+    def __str__(self):
+        return f"ID: {self.codigo:<10} | {self.nombre:<15} | ${self.precio:>8.2f} | Stock: {self.cantidad:>4}"
+
+    def a_csv(self):
+        return f"{self.codigo},{self.nombre},{self.precio},{self.cantidad}\n"
+
+def solicitar_solo_numeros(mensaje, permitir_decimal=False):
+    while True:
+        try:
+            entrada = input(mensaje).strip()
+            valor = float(entrada) if permitir_decimal else int(entrada)
+            if valor >= 0:
+                return entrada if not permitir_decimal else valor
+            print("Error: No se permiten números negativos.")
+        except ValueError:
+            print("Error: Ingrese un número válido.")     
+            
 class Usuario:
     def __init__(self, nombre_usuario, contrasena_encriptada):
         self.nombre_usuario = nombre_usuario
@@ -130,35 +174,3 @@ if __name__ == "__main__":
     menu_auth()
 
 
-class Item:
-    def __init__(self, codigo, nombre):
-        self.codigo = codigo 
-        self.nombre = nombre.strip().title()
-
-class Producto(Item):
-    def __init__(self, codigo, nombre, precio, cantidad):
-        super().__init__(codigo, nombre)
-        self.precio = precio
-        self.cantidad = cantidad
-
-    @property
-    def precio(self): return self._precio
-
-    @precio.setter
-    def precio(self, valor):
-        if float(valor) < 0: raise ValueError("Precio negativo no permitido.")
-        self._precio = float(valor)
-
-    @property
-    def cantidad(self): return self._cantidad
-
-    @cantidad.setter
-    def cantidad(self, valor):
-        if int(valor) < 0: raise ValueError("Stock negativo no permitido.")
-        self._cantidad = int(valor)
-
-    def __str__(self):
-        return f"ID: {self.codigo:<10} | {self.nombre:<15} | ${self.precio:>8.2f} | Stock: {self.cantidad:>4}"
-
-    def a_csv(self):
-        return f"{self.codigo},{self.nombre},{self.precio},{self.cantidad}\n"
